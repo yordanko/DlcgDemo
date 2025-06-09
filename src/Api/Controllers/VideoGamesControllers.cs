@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers;
 
-public class VideoGameController : BaseApiController
+public class VideoGamesController : BaseApiController
 {
     //Get: all videogames
     [HttpGet]
