@@ -1,34 +1,23 @@
 import  { Col, Container, Row } from "react-bootstrap";
 import GamesList from "../Components/GamesList";
-import GameDetail from "../Components/GameDetail";
-import VideogameForm from "../features/form/VideogameForm";
+import { useVideogames } from "../../lib/hooks/useVideogames";
 
 
-type Props = {
-    videoGames: VideoGame[];
-    selectedGame?: VideoGame ;
-    editMode: boolean
-    selectGame?: (id: string) => void;
-    cancelSelectedGame?: () => void;
-    closeForm: () => void;
-    openForm: (id?: string) => void;
-}
-
-export default function Dashboard({ videoGames, selectedGame, selectGame, cancelSelectedGame, closeForm, editMode, openForm }: Props) {
-  
-
+export default function Dashboard() {
+  const {videoGames, isPending} = useVideogames()
+  if (isPending || !videoGames) {
+    return <div className="text-center">Loading..</div>
+  }
   return (
     
     <Container>
       <h3 className="text-center">Video Games Catalogue</h3>
       <Row>
         <Col xs={12} md={6} lg={4}>
-          <GamesList videoGames={videoGames} selectGame={selectGame}/>
+          <GamesList/>
         </Col>
         <Col>
-          {selectedGame && !editMode && 
-          <GameDetail selectedGame={selectedGame} cancelSelectedGame={cancelSelectedGame} openForm={openForm}/>}
-          {editMode && <VideogameForm closeForm={closeForm} videoGame={selectedGame}/>}
+        Video Game Filters To Add
         </Col>
       </Row>
     </Container>

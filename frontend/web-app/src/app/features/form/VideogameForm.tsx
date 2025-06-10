@@ -1,39 +1,42 @@
 import { Button, Form } from "react-bootstrap";
 import { useVideogames } from "../../../lib/hooks/useVideogames";
-type Props = {
-    videoGame?: VideoGame;
-    closeForm: () => void;
-}
+import { useNavigate, useParams } from "react-router";
 
-export default function VideogameForm({videoGame, closeForm}: Props) {
-    const {updateVideoGame, createVideoGame} = useVideogames();
-    
+
+export default function VideogameForm() {
+    const {id} = useParams();
+    const {updateVideoGame, createVideoGame, videoGame, isLoadingVideogames} = useVideogames(id);
+    const navigate = useNavigate();
+
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         // Handle form submission logic here
         const formData = new FormData(event.currentTarget);
-
-        console.log("Form Data:", formData);
         const gameData : {[key:string]: File | string} = {};
         formData.forEach((value, key) => {
             gameData[key] = value;
         });
 
-        console.log("Game Data:", gameData);
         if (videoGame) {
-            console.log("Updating existing game with ID:", videoGame.id);
             gameData.id = videoGame.id; // Include ID if editing an existing game
             await updateVideoGame.mutateAsync(gameData as unknown as VideoGame);
-            closeForm();
+            navigate(`/videogames/${gameData.id}`);
         }
         else {
-            await createVideoGame.mutateAsync(gameData as unknown as VideoGame);
-            closeForm();
+            await createVideoGame.mutateAsync(gameData as unknown as VideoGame, {
+                onSuccess: (id) => {
+                    navigate(`/videogames/${id}`); // Redirect to the videogames list after creation
+                }
+            });
         }
     }
-  return (
+    if (isLoadingVideogames) {
+        return <div className="text-center">Loading Videogames...</div>;
+    }
+
+    return (
     <>
-        <div>Edit Videogame Details</div>
+        <div>{videoGame ? 'Edit Videogame Details' : 'Add Videogame Details'}</div>
         <Form onSubmit={handleSubmit} className="mt-3">
             
         <Form.Group className="mb-3" controlId="title">
@@ -59,15 +62,15 @@ export default function VideogameForm({videoGame, closeForm}: Props) {
             <Form.Label>Game Image URL</Form.Label>
             <Form.Control type="text" name="imageUrl" placeholder="Enter image URL" defaultValue={videoGame?.imageUrl} required/>
         </Form.Group>
+                <Form.Group className="mb-3" controlId="platform">
+            <Form.Label>Game Platforms</Form.Label>
+            <Form.Control type="text" name="platform" placeholder="Enter platforms (comma separated)" defaultValue={videoGame?.platform} />
+        </Form.Group>
         <Form.Group className="mb-3" controlId="publisher">
             <Form.Label>Publisher</Form.Label>
             <Form.Control type="text" name="publisher" placeholder="Enter trailer URL" defaultValue={videoGame?.publisher} />
         </Form.Group>
-        <Form.Group className="mb-3" controlId="platform">
-            <Form.Label>Game Platforms</Form.Label>
-            <Form.Control type="text" name="platform" placeholder="Enter platforms (comma separated)" defaultValue={videoGame?.platform} />
-        </Form.Group>
-        <Button type="button" className="btn btn-secondary ms-2" onClick={closeForm}>Cancel</Button> 
+        <Button type="button" className="btn btn-secondary ms-2" onClick={()=> navigate(videoGame ? `/videogames/${videoGame?.id}`:'/videogames')}>Cancel</Button> 
         <Button type="submit" className="btn btn-primary" 
             disabled={updateVideoGame.isPending || createVideoGame.isPending}
         >Submit</Button>  

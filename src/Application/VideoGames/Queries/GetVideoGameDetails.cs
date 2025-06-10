@@ -1,6 +1,7 @@
 using System;
 using Application.Core;
 using Application.Dtos;
+using Application.Repository;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Domain;
@@ -16,21 +17,11 @@ public class GetVideoGameDetails
     {
         public string Id { get; set; } = string.Empty; // Required for identifying the video game
     }
-    public class Handler(AppDbContext context, IMapper mapper   ) : IRequestHandler<Query, VideoGameDto>
+    public class Handler(IGameRepository repository  ) : IRequestHandler<Query, VideoGameDto>
     {
         public async Task<VideoGameDto> Handle(Query request, CancellationToken cancellationToken)
         {
-            var videoGame = await context.VideoGames.
-                ProjectTo<VideoGameDto>(mapper.ConfigurationProvider)
-                .FirstOrDefaultAsync(vg => vg.Id == request.Id, cancellationToken);
-
-
-            if (videoGame == null)
-            {
-                 throw new AppException(404, "Video game not found");
-            }
-
-            return videoGame;
+            return await repository.GetVideoGame(request.Id, cancellationToken);
         }
     }
 }

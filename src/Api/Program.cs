@@ -1,5 +1,6 @@
 using Api.Middleware;
 using Application.Core;
+using Application.Repository;
 using Application.Validators;
 using Application.VideoGames;
 using FluentValidation;
@@ -35,6 +36,7 @@ builder.Services.AddMediatR(cfg =>
     cfg.AddOpenBehavior(typeof(ValidationMechanism<,>));
 });
 builder.Services.AddValidatorsFromAssemblyContaining<CreateVideoGameValidator>();
+builder.Services.AddScoped<IGameRepository, GameRepository>();
 
 var app = builder.Build();
 

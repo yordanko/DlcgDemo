@@ -10,7 +10,7 @@ public class AppDbContext : DbContext
     { 
     }
 
-    public required DbSet<VideoGame> VideoGames { get; set; }
+    public virtual required DbSet<VideoGame> VideoGames { get; set; }
 
     // Define DbSet properties for your entities here
     // Example: public DbSet<VideoGame> VideoGames { get; set; }

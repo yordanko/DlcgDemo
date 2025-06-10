@@ -1,37 +1,35 @@
 import  { Row, Col, ListGroup, Button } from "react-bootstrap";
 import { useVideogames } from "../../lib/hooks/useVideogames";
+import { useNavigate, useParams } from "react-router";
 
-type Props = {
-    selectedGame: VideoGame;
-    cancelSelectedGame?: () => void;
-    openForm: (id?: string) => void;
-}
+export default function GameDetail() {
+  const {id} = useParams();
+  const navigate = useNavigate();
+  const {videoGame: game, isLoadingVideogames} = useVideogames(id);
 
-export default function GameDetail({ selectedGame , cancelSelectedGame, openForm}: Props) {
-  const {videoGames} = useVideogames();
-  const game = videoGames?.find(game => game.id === selectedGame.id);
-  
-
-    if (!game) {
+  if (isLoadingVideogames) {
         return <div>Loading...</div>;
     }
+
+  if(!game) {
+        return <div className="text-center">No game details available.</div>;}
+  
   return (
     <>
-    <div>GameDetail</div>
-    
     <Row key={game.id}>
             <Col>
               <ListGroup.Item key={game.id}>
+                <h2>{game.title}</h2>
                 <img src={game.imageUrl} alt={game.title} style={{ width: '100%', height: 'auto' }} />
-                <h4>{game.title}</h4>
-                <p>Genre: {game.genre}</p>
-                <p>Release Date: {new Date(game.releaseDate).toLocaleDateString()}</p>
-                <p>Description: {game.description}</p>
-                <p>Publisher: {game.publisher}</p>
-                <p>Platform: {game.platform}</p>
-                <p><Button href={game.url} target="_blank" className="btn-link" variant="info">Game Website</Button></p>
-                <Button variant="secondary" onClick={cancelSelectedGame}>Cancel</Button>
-                <Button variant="primary" onClick={() => openForm(game.id)}>Edit</Button>
+                
+                <p><b>Genre: </b>{game.genre}</p>
+                <p><b>Release Date: </b>{new Date(game.releaseDate).toLocaleDateString()}</p>
+                <p><b>Description: </b>{game.description}</p>
+                <p><b>Publisher: </b>{game.publisher}</p>
+                <p><b>Platform: </b>{game.platform}</p>
+                <p><b>Game Website: </b><Button href={game.url} target="_blank" className="btn-link" variant="info">Visit</Button></p>
+                <Button variant="secondary" onClick={()=>navigate('/videogames')}>Cancel</Button>
+                <Button variant="primary" onClick={() => navigate(`/manage/${game.id}`)}>Edit</Button>
               </ListGroup.Item>
             </Col>
           </Row>

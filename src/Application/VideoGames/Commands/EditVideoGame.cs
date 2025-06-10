@@ -1,6 +1,7 @@
 using System;
 using Application.Core;
 using Application.Dtos;
+using Application.Repository;
 using AutoMapper;
 using MediatR;
 using Persistence;
@@ -16,23 +17,11 @@ public class EditVideoGame
         public required EditVideoGameDto VideoGameDto { get; set; } // Required for identifying the video game 
     }
 
-    public class Handler(AppDbContext context, IMapper mapper) : IRequestHandler<Command, VideoGameDto>
+    public class Handler(IGameRepository repository) : IRequestHandler<Command, VideoGameDto>
     {
         public async Task<VideoGameDto> Handle(Command request, CancellationToken cancellationToken)
         {
-            var videoGame = await context.VideoGames.FindAsync(request.VideoGameDto.Id);
-
-            if (videoGame == null)
-            {
-                throw new AppException(404, "Video game not found");
-            }
-
-            // Update properties of videoGame here based on request
-            mapper.Map(request.VideoGameDto, videoGame);
-
-            await context.SaveChangesAsync(cancellationToken);
-
-            return mapper.Map<VideoGameDto>(videoGame);
+            return await repository.EditVideoGame(request.VideoGameDto, cancellationToken);    
         }
     }
 
