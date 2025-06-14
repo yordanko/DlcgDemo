@@ -1,4 +1,3 @@
-using System;
 using Application.Core;
 using Application.Dtos;
 using Application.Repository;
@@ -15,32 +14,36 @@ public class EditVideoGameTest
 {
     private readonly Mock<IGameRepository> _gameRepo;
     private readonly Fixture _fixture;
-    private readonly IMapper _mapper;
     private readonly CancellationToken _cancellationToken;
-
+    private readonly ServiceProvider _services;
     private readonly IMediator _mediator;
+
+    //private readonly IMapper _mapper;
 
     public EditVideoGameTest()
     {
         _fixture = new Fixture();
-        var mockMapper = new MapperConfiguration(mc =>
-        {
-            mc.AddMaps(typeof(MappingProfile).Assembly);
-        }).CreateMapper().ConfigurationProvider;
 
-        _mapper = new Mapper(mockMapper);
+        // NOTE: if need to mock mapper
+        // var mockMapper = new MapperConfiguration(mc =>
+        // {
+        //     mc.AddMaps(typeof(MappingProfile).Assembly);
+        // }).CreateMapper().ConfigurationProvider;
+
+        // _mapper = new Mapper(mockMapper);
 
         _gameRepo = new Mock<IGameRepository>();
 
         _cancellationToken = new CancellationToken();
 
         var services = new ServiceCollection();
-        var serviceProvider = services
-            .AddMediatR(cfg => cfg.RegisterServicesFromAssemblies(typeof(EditVideoGame).Assembly))
+        services.AddSingleton(_gameRepo.Object);
+        _services = services
+            .AddMediatR(cfg => cfg.RegisterServicesFromAssemblies(typeof(EditVideoGame.Handler).Assembly))
             .BuildServiceProvider();
 
-        _mediator = serviceProvider.GetRequiredService<IMediator>();
-        
+        _mediator = _services.GetRequiredService<IMediator>();
+
     }
 
     [Fact]

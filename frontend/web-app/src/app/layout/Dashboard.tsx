@@ -1,4 +1,4 @@
-import  { Col, Container, Row } from "react-bootstrap";
+import  {  Container} from "react-bootstrap";
 import GamesList from "../Components/GamesList";
 import { useVideogames } from "../../lib/hooks/useVideogames";
 
@@ -11,15 +11,10 @@ export default function Dashboard() {
   return (
     
     <Container>
-      <h3 className="text-center">Video Games Catalogue</h3>
-      <Row>
-        <Col xs={12} md={6} lg={4}>
-          <GamesList/>
-        </Col>
-        <Col>
-        Video Game Filters To Add
-        </Col>
-      </Row>
+      <h2 className="text-center">Video Games Catalogue</h2>
+      <h3>Video Game Filters To Be Added</h3>
+      <GamesList />
+      
     </Container>
   )
 

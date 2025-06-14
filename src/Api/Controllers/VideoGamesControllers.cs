@@ -1,5 +1,3 @@
-using System;
-using System.Threading.Tasks;
 using Application.Dtos;
 using Application.VideoGames;
 using Application.VideoGames.Commands;
@@ -13,7 +11,7 @@ public class VideoGamesController : BaseApiController
 {
     //Get: all videogames
     [HttpGet]
-    public async Task<ActionResult<VideoGame[]>> GetAllVideoGames()
+    public async Task<ActionResult<List<VideoGameDto>>> GetAllVideoGames()
     {
         // Logic to retrieve all video games
 
@@ -22,7 +20,7 @@ public class VideoGamesController : BaseApiController
 
     // GET: api/videogame
     [HttpGet("{id}")]
-    public async Task<ActionResult<VideoGame>> GetVideoGameById(string id)
+    public async Task<ActionResult<VideoGameDto>> GetVideoGameById(string id)
     {
         // Logic to retrieve a video game by its ID
 
